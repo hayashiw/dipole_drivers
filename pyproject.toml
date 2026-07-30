@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dipole-drivers"
+version = "0.1.0"
+description = "Driver scripts for dipole coil optimization on an axisymmetric winding surface"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "scipy",
+    "mpi4py",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# [project.scripts]
+# dipole-run-stage1 = "dipole_drivers.scripts.run_stage1:main"
+# dipole-run-stage2 = "dipole_drivers.scripts.run_stage2:main"
+# dipole-run-singlestage = "dipole_drivers.scripts.run_singlestage:main"
