@@ -2,6 +2,7 @@ import numpy as np
 
 from simsopt.geo import SurfaceRZFourier
 
+from .check import *
 from .ellipse import calculate_even_ellipse_spacing
 
 __all__ = [
@@ -16,20 +17,29 @@ def copy_windingsurface(windingsurface: SurfaceRZFourier) -> SurfaceRZFourier:
     ndipoles_pol_total = windingsurface.quadpoints_theta.size
     ndipoles_tor_total = windingsurface.quadpoints_phi.size
     return generate_dipole_windingsurface(
-        windingsurface_major_radius,
-        windingsurface_minor_radius_r,
-        windingsurface_minor_radius_z,
-        ndipoles_pol_total,
-        ndipoles_tor_total
+        winding_surface_major_radius=windingsurface_major_radius,
+        winding_surface_minor_radius_r=windingsurface_minor_radius_r,
+        winding_surface_minor_radius_z=windingsurface_minor_radius_z,
+        ndipoles_pol_total=ndipoles_pol_total,
+        ndipoles_tor_total=ndipoles_tor_total
     )
 
 def generate_dipole_windingsurface(
-    winding_surface_major_radius: float,
-    winding_surface_minor_radius_r: float,
-    winding_surface_minor_radius_z: float,
-    ndipoles_pol_total: int,
-    ndipoles_tor_total: int,
+    *,
+    winding_surface_major_radius: float = 0.0,
+    winding_surface_minor_radius_r: float = 0.0,
+    winding_surface_minor_radius_z: float = 0.0,
+    ndipoles_pol_total: int = 0,
+    ndipoles_tor_total: int = 0,
+    **kwargs,
 ) -> SurfaceRZFourier:
+    check_required_inputs(
+        winding_surface_major_radius=(is_positive_scalar, winding_surface_major_radius),
+        winding_surface_minor_radius_r=(is_positive_scalar, winding_surface_minor_radius_r),
+        winding_surface_minor_radius_z=(is_positive_scalar, winding_surface_minor_radius_z),
+        ndipoles_pol_total=(is_positive_scalar, ndipoles_pol_total),
+        ndipoles_tor_total=(is_positive_scalar, ndipoles_tor_total),
+    )
     phis = np.linspace(0, 1, ndipoles_tor_total, endpoint=False)
     phis += (phis[1] - phis[0])/2
     

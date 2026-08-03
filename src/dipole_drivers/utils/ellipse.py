@@ -9,6 +9,7 @@ __all__ = [
     "calculate_even_ellipse_spacing",
     "calculate_total_arc_length",
     "fit_ellipse_to_points",
+    "is_enclosed_by_ellipse",
 ]
 
 def calculate_arc_length_residual(
@@ -53,9 +54,11 @@ def calculate_total_arc_length(a: float, b: float) -> float:
     return total_arc_length
 
 def fit_ellipse_to_points(
-    x: np.ndarray[tuple[int], np.dtype[np.float64]],
-    y: np.ndarray[tuple[int], np.dtype[np.float64]]
+    points: np.ndarray[tuple[int, int], np.dtype[np.float64]],
 ) -> tuple[float, float, float]:
+    assert points.ndim == 2 and points.shape[1] == 2, \
+        f"Input points must be a 2D array of shape (n, 2). Got shape {points.shape}."
+    x, y = points.T
     A = np.column_stack([x**2, x, y**2])
     b = np.ones_like(x)
     c1, c2, c3 = np.linalg.lstsq(A, b, rcond=None)[0]
@@ -66,3 +69,28 @@ def fit_ellipse_to_points(
     ellipse_minor_radius_y = np.sqrt(factor / c3)
 
     return ellipse_x0, ellipse_minor_radius_x, ellipse_minor_radius_y
+
+def is_enclosed_by_ellipse(
+    inner_major_radius: float,
+    inner_minor_radius_x: float,
+    inner_minor_radius_y: float,
+    outer_major_radius: float,
+    outer_minor_radius_x: float,
+    outer_minor_radius_y: float,
+    tol: float = 1e-12,
+) -> bool:
+    dR = outer_major_radius - inner_major_radius
+
+    C2 = (inner_minor_radius_x / outer_minor_radius_x)**2 - (inner_minor_radius_y / outer_minor_radius_y)**2
+    C1 = -(2 * inner_minor_radius_x * dR) / (outer_minor_radius_x**2)
+    C0 = (dR / outer_minor_radius_x)**2 + (inner_minor_radius_y / outer_minor_radius_y)**2
+    
+    max_val = max(C2 - C1 + C0, C2 + C1 + C0)
+
+    if C2 < 0:
+        u_crit = -C1 / (2 * C2)
+        if -1 < u_crit < 1:
+            val_crit = C2 * (u_crit**2) + C1 * u_crit + C0
+            max_val = max(max_val, val_crit)
+            
+    return max_val <= (1.0 + tol)

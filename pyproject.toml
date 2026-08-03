@@ -16,7 +16,7 @@ dependencies = [
 [tool.setuptools.packages.find]
 where = ["src"]
 
-# [project.scripts]
+[project.scripts]
 # dipole-run-stage1 = "dipole_drivers.scripts.run_stage1:main"
-# dipole-run-stage2 = "dipole_drivers.scripts.run_stage2:main"
+dipole-run-stage2 = "dipole_drivers.scripts.run_stage2:main"
 # dipole-run-singlestage = "dipole_drivers.scripts.run_singlestage:main"
